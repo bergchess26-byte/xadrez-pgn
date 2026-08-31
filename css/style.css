@@ -1,0 +1,106 @@
+body {
+    background-color: #f8f9fa;
+}
+
+
+/* =========================================================
+   JOGADORES
+   ========================================================= */
+
+.player-box {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background-color: #fff;
+}
+
+.player-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.player-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   RESULTADO
+   ========================================================= */
+
+.result-area {
+    border-top: 1px solid #dee2e6;
+    padding-top: 1rem;
+}
+
+
+/* =========================================================
+   TABELA DE LANCES
+   ========================================================= */
+
+.moves-header {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.moves-table {
+    text-align: center;
+}
+
+.moves-table th {
+    font-size: 0.85rem;
+    color: #6c757d;
+    background-color: #f8f9fa;
+}
+
+.moves-table td {
+    vertical-align: middle;
+    height: 48px;
+    font-family: monospace;
+    font-size: 1rem;
+}
+
+.moves-table .move-number {
+    width: 60px;
+    color: #6c757d;
+    font-family: inherit;
+}
+
+
+/* =========================================================
+   CONTROLES
+   ========================================================= */
+
+.moves-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.moves-controls button {
+    min-width: 110px;
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 576px) {
+
+    .moves-controls {
+        gap: 0.5rem;
+    }
+
+    .moves-controls button {
+        min-width: auto;
+        flex: 1;
+    }
+
+}
+

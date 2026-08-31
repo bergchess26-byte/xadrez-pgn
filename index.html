@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Estudo de Partida</title>
+
+    <!-- Bootstrap 5 -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- CSS da aplicação -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="container py-4">
+
+    <!-- =====================================================
+         CABEÇALHO
+         ===================================================== -->
+
+    <header class="text-center mb-4">
+
+        <h1 class="h3 mb-1">
+            Estudo de Partida
+        </h1>
+
+        <p class="text-muted mb-3">
+            Visualização e estudo de partidas de xadrez
+        </p>
+
+        <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#importModal"
+        >
+            Importar PGN
+        </button>
+
+    </header>
+
+
+    <!-- =====================================================
+         MODAL DE IMPORTAÇÃO
+         ===================================================== -->
+
+    <div
+        class="modal fade"
+        id="importModal"
+        tabindex="-1"
+        aria-labelledby="importModalLabel"
+        aria-hidden="true"
+    >
+
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <!-- Cabeçalho do modal -->
+                <div class="modal-header">
+
+                    <h2
+                        class="modal-title fs-5"
+                        id="importModalLabel"
+                    >
+                        Importar partida PGN
+                    </h2>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Fechar"
+                    ></button>
+
+                </div>
+
+
+                <!-- Corpo -->
+                <div class="modal-body">
+
+                    <!-- Arquivo -->
+                    <div class="mb-4">
+
+                        <label
+                            for="pgnFile"
+                            class="form-label fw-semibold"
+                        >
+                            Arquivo PGN
+                        </label>
+
+                        <input
+                            type="file"
+                            class="form-control"
+                            id="pgnFile"
+                            accept=".pgn,text/plain"
+                        >
+
+                        <div class="form-text">
+                            Selecione um arquivo com extensão .pgn.
+                        </div>
+
+                    </div>
+
+
+                    <!-- Separador -->
+                    <div class="d-flex align-items-center mb-4">
+
+                        <div class="flex-grow-1 border-top"></div>
+
+                        <span class="px-3 text-muted small">
+                            ou cole o PGN
+                        </span>
+
+                        <div class="flex-grow-1 border-top"></div>
+
+                    </div>
+
+
+                    <!-- Texto PGN -->
+                    <div class="mb-3">
+
+                        <label
+                            for="pgnText"
+                            class="form-label fw-semibold"
+                        >
+                            Conteúdo PGN
+                        </label>
+
+                        <textarea
+                            class="form-control font-monospace"
+                            id="pgnText"
+                            rows="10"
+                            placeholder='[Event "Partida"]
+
+[White "Jogador 1"]
+[Black "Jogador 2"]
+[Date "2026.08.30"]
+[Result "1-0"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 1-0'
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- Erro -->
+                    <div
+                        id="importError"
+                        class="alert alert-danger d-none"
+                        role="alert"
+                    ></div>
+
+                </div>
+
+
+                <!-- Rodapé -->
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="button"
+                        id="importButton"
+                        class="btn btn-primary"
+                    >
+                        Importar partida
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ÁREA DA PARTIDA
+         ===================================================== -->
+
+    <main id="gameSection" class="d-none">
+
+        <!-- =================================================
+             INFORMAÇÕES DA PARTIDA
+             ================================================= -->
+
+        <section class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-start mb-3">
+
+                    <div>
+
+                        <h2
+                            class="h5 mb-1"
+                            id="eventName"
+                        >
+                            Partida
+                        </h2>
+
+                        <div
+                            id="gameType"
+                            class="text-muted small"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- Menu -->
+                    <div class="dropdown">
+
+                        <button
+                            class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            Opções
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+
+                            <li>
+                                <button
+                                    class="dropdown-item"
+                                    type="button"
+                                    id="restartButton"
+                                >
+                                    ↻ Reiniciar estudo
+                                </button>
+                            </li>
+
+                            <li>
+                                <button
+                                    class="dropdown-item"
+                                    type="button"
+                                    id="newGameButton"
+                                >
+                                    Nova partida
+                                </button>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            <li>
+                                <button
+                                    class="dropdown-item text-danger"
+                                    type="button"
+                                    id="clearStorageButton"
+                                >
+                                    Limpar dados salvos
+                                </button>
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Jogadores -->
+                <div class="row g-3">
+
+                    <div class="col-12 col-md-6">
+
+                        <div class="player-box">
+
+                            <div class="player-label">
+                                Brancas
+                            </div>
+
+                            <div
+                                id="whitePlayer"
+                                class="player-name"
+                            >
+                                —
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-12 col-md-6">
+
+                        <div class="player-box">
+
+                            <div class="player-label">
+                                Pretas
+                            </div>
+
+                            <div
+                                id="blackPlayer"
+                                class="player-name"
+                            >
+                                —
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Data -->
+                <div class="mt-3 text-muted small">
+
+                    Data:
+
+                    <strong
+                        id="gameDate"
+                        class="text-body"
+                    >
+                        —
+                    </strong>
+
+                </div>
+
+
+                <!-- Resultado -->
+                <div class="result-area mt-4 text-center">
+
+                    <div
+                        id="resultHidden"
+                        class="text-muted mb-2"
+                    >
+                        Resultado oculto
+                    </div>
+
+
+                    <div
+                        id="resultVisible"
+                        class="d-none mb-2"
+                    >
+
+                        <strong id="gameResult">
+                            —
+                        </strong>
+
+                        <div
+                            id="winnerName"
+                            class="small text-muted"
+                        ></div>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="showResultButton"
+                        class="btn btn-outline-primary btn-sm"
+                    >
+                        Mostrar resultado
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             NOTAÇÃO
+             ================================================= -->
+
+        <section class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <h2 class="h6 text-center mb-3">
+                    Sistema de notação
+                </h2>
+
+
+                <div
+                    class="btn-group w-100"
+                    role="group"
+                    aria-label="Tipo de notação"
+                >
+
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        data-notation="algebraic"
+                    >
+                        Algébrica
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        data-notation="algebraic-pt"
+                    >
+                        Algébrica PT
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        data-notation="descriptive"
+                    >
+                        Descritiva
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             TABELA DE LANCES
+             ================================================= -->
+
+        <section class="card shadow-sm mb-4">
+
+            <div class="card-body p-0">
+
+                <div class="moves-header">
+
+                    <h2 class="h6 mb-0">
+                        Lances
+                    </h2>
+
+                </div>
+
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover moves-table mb-0">
+
+                        <thead>
+
+                            <tr>
+
+                                <th
+                                    scope="col"
+                                    class="move-number"
+                                >
+                                    #
+                                </th>
+
+                                <th scope="col">
+                                    Brancas
+                                </th>
+
+                                <th scope="col">
+                                    Pretas
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="movesTableBody">
+
+                            <!--
+                                Os lances serão inseridos
+                                pelo JavaScript.
+                            -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             CONTROLES DOS LANCES
+             ================================================= -->
+
+        <section class="moves-controls mb-4">
+
+            <button
+                type="button"
+                id="previousMoveButton"
+                class="btn btn-outline-secondary"
+            >
+                ◀ Voltar
+            </button>
+
+
+            <div
+                id="progressLabel"
+                class="text-muted small text-center"
+                aria-live="polite"
+            ></div>
+
+
+            <button
+                type="button"
+                id="nextMoveButton"
+                class="btn btn-primary"
+            >
+                Avançar ▶
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         RODAPÉ
+         ===================================================== -->
+
+    <footer class="text-center text-muted small py-3">
+
+        Estudo de partida de xadrez
+
+    </footer>
+
+</div>
+
+
+<!-- =========================================================
+     BOOTSTRAP
+     ========================================================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
+
+<!-- =========================================================
+     JAVASCRIPT DA APLICAÇÃO
+     ========================================================= -->
+
+<script src="js/storage.js"></script>
+<script src="js/pgn.js"></script>
+<script src="js/board.js"></script>
+<script src="js/notation.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

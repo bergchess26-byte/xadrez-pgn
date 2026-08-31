@@ -1,0 +1,124 @@
+body {
+    background-color: #2b3a2a;
+    color: #f1f1f1;
+}
+
+
+/* =========================================================
+   JOGADORES
+   ========================================================= */
+
+.player-box {
+    border: 1px solid #3c513a;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background-color: #1f2b1e;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.player-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #a3c29e;
+    margin-bottom: 0.25rem;
+}
+
+.player-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   RESULTADO
+   ========================================================= */
+
+.result-area {
+    border-top: 1px solid #3c513a;
+    padding-top: 1rem;
+}
+
+
+/* =========================================================
+   TABELA DE LANCES
+   ========================================================= */
+
+.moves-header {
+    padding: 1rem;
+    border-bottom: 1px solid #3c513a;
+    background-color: #223021;
+}
+
+.moves-table {
+    text-align: center;
+    color: #e2e8f0;
+}
+
+.moves-table th {
+    font-size: 0.85rem;
+    color: #a3c29e;
+    background-color: #172116;
+    border-bottom: 1px solid #3c513a;
+}
+
+.moves-table td {
+    vertical-align: middle;
+    height: 48px;
+    font-family: monospace;
+    font-size: 1rem;
+    border-bottom: 1px solid #2a3a29;
+}
+
+.moves-table .move-number {
+    width: 60px;
+    color: #8dae88;
+    font-family: inherit;
+    background-color: #1a2519;
+}
+
+
+/* =========================================================
+   CONTROLES
+   ========================================================= */
+
+.moves-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.moves-controls button {
+    min-width: 110px;
+    background-color: #486845;
+    color: #ffffff;
+    border: 1px solid #5a8057;
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.moves-controls button:hover {
+    background-color: #587f54;
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 576px) {
+
+    .moves-controls {
+        gap: 0.5rem;
+    }
+
+    .moves-controls button {
+        min-width: auto;
+        flex: 1;
+    }
+
+}
