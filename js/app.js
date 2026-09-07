@@ -59,6 +59,11 @@ const notationButtons =
         '[data-notation]'
     );
 
+/* Elementos Adicionais para Tabuleiro e Navegação */
+const flipBoardButton = document.getElementById('flipBoardButton');
+const jumpMoveInput = document.getElementById('jumpMoveInput');
+const jumpMoveButton = document.getElementById('jumpMoveButton');
+
 
 /* =========================================================
    IMPORTAÇÃO
@@ -153,7 +158,10 @@ async function importGame() {
                 preferredNotation,
 
             resultVisible:
-                false
+                false,
+
+            boardOrientation:
+                'white'
         };
 
         saveGame(currentGame);
@@ -212,10 +220,17 @@ function renderGame() {
 
 
     /*
-     * Tabela
+     * Tabela de Lances
      */
 
     renderMoves();
+
+
+    /*
+     * Tabuleiro Visual
+     */
+
+    renderCurrentBoard();
 
 
     /*
@@ -230,6 +245,38 @@ function renderGame() {
      */
 
     gameSection.classList.remove('d-none');
+}
+
+
+/* =========================================================
+   RENDERIZAÇÃO DO TABULEIRO
+   ========================================================= */
+
+function renderCurrentBoard() {
+
+    if (!currentGame) {
+        return;
+    }
+
+    const ply = currentGame.currentPly;
+    let boardState;
+    let highlightMove = null;
+
+    if (ply === 0) {
+        boardState = createBoard();
+    } else {
+        const lastMove = currentGame.history[ply - 1];
+        boardState = lastMove ? lastMove.boardAfter : createBoard();
+        if (lastMove) {
+            highlightMove = {
+                from: lastMove.from,
+                to: lastMove.to
+            };
+        }
+    }
+
+    const isFlipped = (currentGame.boardOrientation === 'black');
+    renderBoard(boardState, 'board', isFlipped, highlightMove);
 }
 
 
@@ -296,7 +343,6 @@ function renderResult() {
 /* =========================================================
    TABELA DE LANCES
    ========================================================= */
-
 
 function renderMoves() {
 
@@ -369,6 +415,16 @@ function renderMoves() {
                         whitePlyIndex
                     ]
                 );
+
+            whiteCell.style.cursor = 'pointer';
+            whiteCell.title = `Ir para o lance ${whitePlyIndex + 1}`;
+            whiteCell.addEventListener('click', () => {
+                jumpToPly(whitePlyIndex + 1);
+            });
+
+            if (whitePlyIndex === currentGame.currentPly - 1) {
+                whiteCell.classList.add('table-active', 'fw-bold');
+            }
         }
 
 
@@ -394,6 +450,16 @@ function renderMoves() {
                         blackPlyIndex
                     ]
                 );
+
+            blackCell.style.cursor = 'pointer';
+            blackCell.title = `Ir para o lance ${blackPlyIndex + 1}`;
+            blackCell.addEventListener('click', () => {
+                jumpToPly(blackPlyIndex + 1);
+            });
+
+            if (blackPlyIndex === currentGame.currentPly - 1) {
+                blackCell.classList.add('table-active', 'fw-bold');
+            }
         }
 
 
@@ -406,31 +472,64 @@ function renderMoves() {
 }
 
 
-
-
-
 /* =========================================================
-   CONVERSÃO DE NOTAÇÃO
+   IR PARA UM LANCE ESPECÍFICO (JUMP TO PLY/MOVE)
    ========================================================= */
 
-//function convertMove(move) {
+function jumpToPly(targetPly) {
+    if (!currentGame) return;
+
+    // Garante que o ply fique dentro do limite válido (0 até o total de lances)
+    const plyNumber = Math.max(0, Math.min(targetPly, currentGame.moves.length));
+
+    currentGame.currentPly = plyNumber;
+
+    saveGame(currentGame);
+
+    renderMoves();
+    renderCurrentBoard();
+    updateMoveControls();
+}
+
+/**
+ * Função executada ao clicar no botão "Ir" ou pressionar Enter no campo
+ */
+function handleJumpMove() {
+    if (!currentGame || !jumpMoveInput) return;
+
+    const moveNumber = parseInt(jumpMoveInput.value, 10);
+
+    // Se o valor for inválido ou menor/igual a 0, vai para o início
+    if (isNaN(moveNumber) || moveNumber <= 0) {
+        jumpToPly(0);
+        return;
+    }
 
     /*
-     * Por enquanto a conversão ainda está sendo preparada.
-     *
-     * A próxima etapa implementará:
-     *
-     * algebraic
-     * algebraic-pt
-     * descriptive
+     * Converte o número da jogada (Move) para a quantidade de Plies (meio-lances).
+     * Exemplo:
+     * - Lance 1 -> Pula para a jogada das Brancas no lance 1 (ply 1)
+     * - Lance 10 -> Pula para a jogada das Brancas no lance 10 (ply 19)
      */
+    const targetPly = (moveNumber - 1) * 2 + 1;
 
-   // if (currentGame.notation === 'algebraic') {
-       // return move.san;
-   // }
+    jumpToPly(targetPly);
+}
 
-   // return move.san;
-//}
+// Clique no botão "Ir"
+if (jumpMoveButton) {
+    jumpMoveButton.addEventListener('click', handleJumpMove);
+}
+
+// Pressionar a tecla Enter dentro do campo de texto/número
+if (jumpMoveInput) {
+    jumpMoveInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            handleJumpMove();
+        }
+    });
+}
 
 
 /* =========================================================
@@ -456,9 +555,9 @@ nextMoveButton.addEventListener(
             saveGame(currentGame);
 
             renderMoves();
+            renderCurrentBoard();
             updateMoveControls();
         }
-
 
     }
 );
@@ -483,12 +582,29 @@ previousMoveButton.addEventListener(
             saveGame(currentGame);
 
             renderMoves();
+            renderCurrentBoard();
             updateMoveControls();
         }
 
-
     }
 );
+
+
+/* =========================================================
+   INVERTER PERSPECTIVA DO TABULEIRO
+   ========================================================= */
+
+if (flipBoardButton) {
+    flipBoardButton.addEventListener('click', () => {
+        if (!currentGame) return;
+
+        currentGame.boardOrientation =
+            flipBoardOrientation(currentGame.boardOrientation || 'white');
+
+        saveGame(currentGame);
+        renderCurrentBoard();
+    });
+}
 
 
 /* =========================================================
@@ -538,8 +654,6 @@ function updateMoveControls() {
         progressLabel.textContent = '';
     }
 }
-
-
 
 
 /* =========================================================
@@ -644,7 +758,6 @@ clearStorageButton.addEventListener(
    NOTAÇÃO
    ========================================================= */
 
-
 notationButtons.forEach(button => {
 
     button.addEventListener(
@@ -718,8 +831,6 @@ notationButtons.forEach(button => {
         }
     );
 });
-
-
 
 
 /* =========================================================
@@ -811,7 +922,6 @@ function hideImportError() {
 }
 
 
-
 function updateNotationButtons() {
 
     if (!notationButtons) {
@@ -840,10 +950,6 @@ function updateNotationButtons() {
 }
 
 
-
-
-
-
 /* =========================================================
    RESTAURAÇÃO AUTOMÁTICA
    ========================================================= */
@@ -869,7 +975,6 @@ function restoreSavedGame() {
             buildMoveHistory(
                 parsed.moves
             );
-
 
 
         /*
@@ -909,7 +1014,10 @@ function restoreSavedGame() {
             notation,
 
             resultVisible:
-                savedGame.resultVisible === true
+                savedGame.resultVisible === true,
+
+            boardOrientation:
+                savedGame.boardOrientation || 'white'
         };
 
 
@@ -939,4 +1047,3 @@ function restoreSavedGame() {
  */
 
 restoreSavedGame();
-

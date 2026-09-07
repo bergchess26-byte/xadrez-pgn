@@ -13,7 +13,7 @@
     >
 
     <!-- CSS da aplicação -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=1">
 </head>
 
 <body>
@@ -195,7 +195,7 @@
     <main id="gameSection" class="d-none">
 
         <!-- =================================================
-             INFORMAÇÕES DA PARTIDA
+             1. INFORMAÇÕES DA PARTIDA (COMPLETO NO TOPO)
              ================================================= -->
 
         <section class="card shadow-sm mb-4">
@@ -380,7 +380,7 @@
 
 
         <!-- =================================================
-             NOTAÇÃO
+             2. NOTAÇÃO (COMPLETO NO TOPO)
              ================================================= -->
 
         <section class="card shadow-sm mb-4">
@@ -430,99 +430,185 @@
 
 
         <!-- =================================================
-             TABELA DE LANCES
+             3. ÁREA DIVIDIDA: TABULEIRO (ESQUERDA) | LANCES (DIREITA)
              ================================================= -->
 
-        <section class="card shadow-sm mb-4">
+        <div class="row g-4 align-items-start">
 
-            <div class="card-body p-0">
+            <!-- TABULEIRO (ESQUERDA 50%) - FIXO AO ROLAR (STICKY) -->
+            <div class="col-sm-6 col-lg-6 sticky-top" style="top: 20px; z-index: 10;">
 
-                <div class="moves-header">
+                <section class="card shadow-sm">
 
-                    <h2 class="h6 mb-0">
-                        Lances
-                    </h2>
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center">
 
-                </div>
+                        <!-- Controle superior do Tabuleiro -->
+                        <div class="w-100 d-flex justify-content-between align-items-center mb-3">
 
+                            <span class="fw-semibold text-muted small">
+                                Tabuleiro Visual
+                            </span>
 
-                <div class="table-responsive">
+                            <button
+                                type="button"
+                                id="flipBoardButton"
+                                class="btn btn-outline-secondary btn-sm"
+                                title="Inverter visão (Brancas / Pretas)"
+                            >
+                                🔄 Inverter Visão
+                            </button>
 
-                    <table class="table table-hover moves-table mb-0">
+                        </div>
 
-                        <thead>
+                        <!-- Container do Tabuleiro -->
+                        <div id="boardContainer" class="w-100 d-flex justify-content-center">
 
-                            <tr>
+                            <div id="board" class="chess-board">
+                                <!-- O tabuleiro será renderizado aqui pelo JS -->
+                            </div>
 
-                                <th
-                                    scope="col"
-                                    class="move-number"
-                                >
-                                    #
-                                </th>
+                        </div>
 
-                                <th scope="col">
-                                    Brancas
-                                </th>
+                        <!--<div id="boardOrientationLabel" class="text-muted small mt-2">
+                            Visão: Brancas
+                        </div>-->
 
-                                <th scope="col">
-                                    Pretas
-                                </th>
+                    </div>
 
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody id="movesTableBody">
-
-                            <!--
-                                Os lances serão inseridos
-                                pelo JavaScript.
-                            -->
-
-                        </tbody>
-
-                    </table>
-
-                </div>
+                </section>
 
             </div>
 
-        </section>
+
+            <!-- TABELA DE LANCES E CONTROLES (DIREITA 50%) -->
+            <div class="col-sm-6 col-lg-6">
+
+                <!-- Tabela de Lances (Cresce livremente com a página) -->
+                <section class="card shadow-sm mb-4">
+
+                    <div class="card-body p-0">
+
+                        <div class="moves-header">
+
+                            <h2 class="h6 mb-0">
+                                Lances
+                            </h2>
+
+                        </div>
 
 
-        <!-- =================================================
-             CONTROLES DOS LANCES
-             ================================================= -->
+                        <div class="table-responsive">
 
-        <section class="moves-controls mb-4">
+                            <table class="table table-hover moves-table mb-0">
 
-            <button
-                type="button"
-                id="previousMoveButton"
-                class="btn btn-outline-secondary"
-            >
-                ◀ Voltar
-            </button>
+                                <thead>
+
+                                    <tr>
+
+                                        <th
+                                            scope="col"
+                                            class="move-number"
+                                        >
+                                            #
+                                        </th>
+
+                                        <th scope="col">
+                                            Brancas
+                                        </th>
+
+                                        <th scope="col">
+                                            Pretas
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
 
 
-            <div
-                id="progressLabel"
-                class="text-muted small text-center"
-                aria-live="polite"
-            ></div>
+                                <tbody id="movesTableBody">
+
+                                    <!--
+                                        Os lances serão inseridos
+                                        pelo JavaScript.
+                                    -->
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </section>
 
 
-            <button
-                type="button"
-                id="nextMoveButton"
-                class="btn btn-primary"
-            >
-                Avançar ▶
-            </button>
+                <!-- Controles dos Lances -->
+                <section class="moves-controls card p-3 shadow-sm mb-4">
 
-        </section>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+
+                        <button
+                            type="button"
+                            id="previousMoveButton"
+                            class="btn btn-outline-secondary"
+                        >
+                            ◀ Voltar
+                        </button>
+
+
+                        <div
+                            id="progressLabel"
+                            class="text-muted small text-center fw-semibold"
+                            aria-live="polite"
+                        ></div>
+
+
+                        <button
+                            type="button"
+                            id="nextMoveButton"
+                            class="btn btn-primary"
+                        >
+                            Avançar ▶
+                        </button>
+
+                    </div>
+
+
+                    <!-- Ir Para o Lance -->
+                    <div class="pt-2 border-top">
+
+                        <label for="goToMoveInput" class="form-label small text-muted mb-1">
+                            Ir para o lance:
+                        </label>
+
+                        <div class="input-group input-group-sm">
+
+                            <input
+                                type="number"
+                                id="jumpMoveInput"
+                                class="form-control"
+                                placeholder="Ex: 10"
+                                min="1"
+                            >
+
+                            <button
+                                type="button"
+                                id="jumpMoveButton"
+                                class="btn btn-outline-primary"
+                            >
+                                Ir
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </div>
 
     </main>
 
@@ -553,11 +639,13 @@
      JAVASCRIPT DA APLICAÇÃO
      ========================================================= -->
 
-<script src="js/storage.js"></script>
-<script src="js/pgn.js"></script>
-<script src="js/board.js"></script>
-<script src="js/notation.js"></script>
-<script src="js/app.js"></script>
+
+<script src="js/board.js?v=4"></script>
+<script src="js/notation.js?v=4"></script>
+
+<script src="js/pgn.js?v=4"></script>
+<script src="js/storage.js?v=4"></script>
+<script src="js/app.js?v=4"></script>
 
 </body>
 </html>

@@ -1,115 +1,75 @@
 'use strict';
 
-/*
- * =========================================================
- * ARMAZENAMENTO LOCAL
- * =========================================================
- *
- * Tudo fica salvo no navegador através do localStorage.
- *
- * Não utilizamos servidor ou banco de dados.
- */
-
-const STORAGE_KEY = 'chess-study-game';
-const NOTATION_KEY = 'chess-study-notation';
-
+const STORAGE_KEY_GAME = 'chess_study_current_game';
+const STORAGE_KEY_NOTATION = 'chess_study_notation';
 
 /**
- * Salva a partida atual.
+ * Salva a partida atual no localStorage
  */
-function saveGame(game) {
-
-    if (!game) {
-        return;
+function saveGame(gameData) {
+    if (!gameData) return;
+    try {
+        localStorage.setItem(STORAGE_KEY_GAME, JSON.stringify(gameData));
+    } catch (e) {
+        console.error('Erro ao salvar partida no localStorage:', e);
     }
-
-    const data = {
-        pgn: game.pgn,
-        currentPly: game.currentPly,
-        notation: game.notation,
-        resultVisible: game.resultVisible
-    };
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(data)
-    );
 }
 
-
 /**
- * Recupera a partida salva.
+ * Carrega a partida salva do localStorage
  */
 function loadGame() {
-
-    const saved =
-        localStorage.getItem(STORAGE_KEY);
-
-    if (!saved) {
-        return null;
-    }
-
     try {
-
-        return JSON.parse(saved);
-
-    } catch (error) {
-
-        console.error(
-            'Não foi possível recuperar a partida salva.',
-            error
-        );
-
+        const data = localStorage.getItem(STORAGE_KEY_GAME);
+        return data ? JSON.parse(data) : null;
+    } catch (e) {
+        console.error('Erro ao carregar partida do localStorage:', e);
         return null;
     }
 }
 
-
 /**
- * Remove a partida salva.
+ * Remove a partida salva do localStorage
  */
 function removeSavedGame() {
-
-    localStorage.removeItem(STORAGE_KEY);
+    try {
+        localStorage.removeItem(STORAGE_KEY_GAME);
+    } catch (e) {
+        console.error('Erro ao remover partida do localStorage:', e);
+    }
 }
 
-
 /**
- * Salva a preferência de notação.
+ * Salva a preferência de notação (algebraic, pt, descriptive)
  */
 function saveNotation(notation) {
-
-    if (!notation) {
-        return;
+    try {
+        localStorage.setItem(STORAGE_KEY_NOTATION, notation);
+    } catch (e) {
+        console.error('Erro ao salvar notação no localStorage:', e);
     }
-
-    localStorage.setItem(
-        NOTATION_KEY,
-        notation
-    );
 }
 
-
 /**
- * Recupera a preferência de notação.
- *
- * Caso não exista, usamos Algébrica.
+ * Carrega a preferência de notação salva
  */
 function loadNotation() {
-
-    return (
-        localStorage.getItem(NOTATION_KEY)
-        || 'algebraic'
-    );
+    try {
+        return localStorage.getItem(STORAGE_KEY_NOTATION) || 'algebraic';
+    } catch (e) {
+        console.error('Erro ao carregar notação do localStorage:', e);
+        return 'algebraic';
+    }
 }
-
 
 /**
- * Remove todos os dados da aplicação.
+ * Limpa todos os dados salvos da aplicação
  */
 function clearSavedData() {
-
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(NOTATION_KEY);
+    try {
+        localStorage.removeItem(STORAGE_KEY_GAME);
+        localStorage.removeItem(STORAGE_KEY_NOTATION);
+    } catch (e) {
+        console.error('Erro ao limpar dados do localStorage:', e);
+    }
 }
-

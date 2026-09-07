@@ -62,6 +62,13 @@ body {
     height: 48px;
     font-family: monospace;
     font-size: 1rem;
+    cursor: pointer;
+}
+
+/* Destaque para o lance ativo na tabela */
+.moves-table td.active-move {
+    background-color: #e2e3e5;
+    font-weight: bold;
 }
 
 .moves-table .move-number {
@@ -72,35 +79,185 @@ body {
 
 
 /* =========================================================
-   CONTROLES
+   TABULEIRO VISUAL
    ========================================================= */
 
-.moves-controls {
+#boardContainer {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.chess-board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border: 2px solid #333;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    user-select: none;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+/* Casas do tabuleiro */
+.chess-square {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+    position: relative;
 }
 
-.moves-controls button {
-    min-width: 110px;
+.chess-square.light {
+    background-color: #f0d9b5;
+    color: #333;
+}
+
+.chess-square.dark {
+    background-color: #b58863;
+    color: #333;
+}
+
+/* Destacar último movimento no tabuleiro */
+.chess-square.highlight {
+    background-color: #cdd26a !important;
+}
+
+/* Inversão do tabuleiro (Visão das Pretas) */
+.chess-board.flipped {
+    transform: rotate(180deg);
+}
+
+.chess-board.flipped .chess-square .chess-piece {
+    transform: rotate(180deg);
+}
+
+/* Renderização e animação suave das peças */
+.chess-piece {
+    line-height: 1;
+    transition: transform 0.3s ease;
+    display: inline-block;
+}
+
+
+
+
+/* Container do tabuleiro */
+#board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 1 / 1;
+    border: 2px solid #333;
+    margin: 0 auto;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* Casas do tabuleiro */
+.chess-square {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(2rem + 1vw);
+    user-select: none;
+}
+
+/* Tema Verde do Chess.com */
+.chess-square.light {
+    background-color: #eeeed2;
+    color: #222;
+}
+
+.chess-square.dark {
+    background-color: #769656;
+    color: #222;
+}
+
+/* Destaque do último lance (Chess.com usa amarelo translúcido) */
+.chess-square.highlight {
+    background-color: #baca44 !important;
+}
+
+/* Estilo das Coordenadas (Letras e Números) */
+.coord {
+    position: absolute;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.light .coord {
+    color: #769656;;
+}
+
+.dark .coord {
+    color: #eeeed2;
+}
+
+.coord-rank {
+    top: 2px;
+    left: 3px;
+}
+
+.coord-file {
+    bottom: 2px;
+    right: 3px;
+}
+
+/* Inversão do tabuleiro */
+#board.flipped {
+    transform: rotate(180deg);
+}
+
+#board.flipped .chess-piece,
+#board.flipped .coord {
+    transform: rotate(180deg);
 }
 
 
 /* =========================================================
-   RESPONSIVIDADE
+   CONTROLES DE LANCES E IR PARA O LANCE
    ========================================================= */
+
+.moves-controls {
+    display: flex;
+    flex-direction: column;
+}
+
+#goToMoveInput {
+    text-align: center;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE E STICKY TOP
+   ========================================================= */
+
+@media (min-width: 992px) {
+    /* Garante que o tabuleiro fique visível sem ser cortado pela barra superior ao rolar */
+    .sticky-top {
+        top: 1rem !important;
+    }
+}
 
 @media (max-width: 576px) {
 
-    .moves-controls {
-        gap: 0.5rem;
-    }
-
     .moves-controls button {
         min-width: auto;
-        flex: 1;
+    }
+
+    .chess-square {
+        font-size: 2rem;
     }
 
 }
-

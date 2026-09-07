@@ -1061,3 +1061,91 @@ function buildMoveHistory(
     return history;
 
 }
+
+
+/* =========================================================
+   NOVO: RENDERIZAÇÃO E ROTAÇÃO DO TABULEIRO VISUAL
+   ========================================================= */
+
+const UNICODE_PIECES = {
+    'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+    'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+};
+
+/**
+ * Renderiza o estado atual do tabuleiro no elemento DOM especificado.
+ * 
+ * @param {Object} boardState - Objeto contendo o mapa de casas -> peças (ex: {a1: 'R', e4: 'P'})
+ * @param {string} containerId - ID do container no HTML (padrão: 'board')
+ * @param {boolean} isFlipped - Se true, renderiza do ponto de vista das Pretas
+ * @param {Object} highlightMove - Objeto opcional com {from: 'e2', to: 'e4'} para destacar o último movimento
+ */
+function renderBoard(boardState, containerId = 'board', isFlipped = false, highlightMove = null) {
+    const boardElement = document.getElementById(containerId);
+    if (!boardElement) return;
+
+    boardElement.innerHTML = '';
+
+    if (isFlipped) {
+        boardElement.classList.add('flipped');
+    } else {
+        boardElement.classList.remove('flipped');
+    }
+
+    const ranks = [...RANKS].reverse(); // '8' até '1'
+    const files = [...FILES];           // 'a' até 'h'
+
+    for (let r = 0; r < 8; r++) {
+        for (let f = 0; f < 8; f++) {
+            const rank = ranks[r];
+            const file = files[f];
+            const square = `${file}${rank}`;
+
+            const squareElement = document.createElement('div');
+            squareElement.classList.add('chess-square');
+            
+            // Alternância de cores das casas
+            const isLight = (r + f) % 2 === 0;
+            squareElement.classList.add(isLight ? 'light' : 'dark');
+
+            // Destaque para as casas do último lance
+            if (highlightMove && (square === highlightMove.from || square === highlightMove.to)) {
+                squareElement.classList.add('highlight');
+            }
+
+            // Adiciona a peça se existir na casa
+            const piece = boardState[square];
+            if (piece && UNICODE_PIECES[piece]) {
+                const pieceElement = document.createElement('span');
+                pieceElement.classList.add('chess-piece');
+                pieceElement.textContent = UNICODE_PIECES[piece];
+                squareElement.appendChild(pieceElement);
+            }
+
+            // Adiciona o Número da Fileira (na primeira coluna - coluna A)
+            if (f === 0) {
+                const rankSpan = document.createElement('span');
+                rankSpan.className = 'coord coord-rank';
+                rankSpan.textContent = rank;
+                squareElement.appendChild(rankSpan);
+            }
+
+            // Adiciona a Letra da Coluna (na última fileira - fileira 1)
+            if (r === 7) {
+                const fileSpan = document.createElement('span');
+                fileSpan.className = 'coord coord-file';
+                fileSpan.textContent = file;
+                squareElement.appendChild(fileSpan);
+            }
+
+            boardElement.appendChild(squareElement);
+        }
+    }
+}
+
+/**
+ * Alterna a orientação atual (white <-> black)
+ */
+function flipBoardOrientation(currentOrientation) {
+    return currentOrientation === 'white' ? 'black' : 'white';
+}
