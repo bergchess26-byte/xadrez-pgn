@@ -33,7 +33,6 @@ const PIECE_PT = {
     P: ''
 };
 
-
 function notationAlgebraicPT(move) {
     let san = move?.san || '';
 
@@ -52,10 +51,19 @@ function notationAlgebraicPT(move) {
     const prefix = PIECE_PT[piece] ?? '';
 
     /*
-     * Remove a letra inglesa da peça.
+     * Remove a letra inglesa da peça no início (ex: Nf3 -> f3)
      */
     if (piece !== 'P' && /^[KQRBN]/.test(san)) {
         san = san.substring(1);
+    }
+
+    /*
+     * Traduz a peça na promoção (ex: =Q -> =D)
+     */
+    if (san.includes('=')) {
+        san = san.replace(/=([KQRBN])/, (match, promoPiece) => {
+            return '=' + (PIECE_PT[promoPiece] || promoPiece);
+        });
     }
 
     return prefix + san;
