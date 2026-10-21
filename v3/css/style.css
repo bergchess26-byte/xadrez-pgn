@@ -1,0 +1,304 @@
+body {
+    background-color: #f8f9fa;
+}
+
+
+/* =========================================================
+   JOGADORES
+   ========================================================= */
+
+.player-box {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background-color: #fff;
+}
+
+.player-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.player-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   RESULTADO
+   ========================================================= */
+
+.result-area {
+    border-top: 1px solid #dee2e6;
+    padding-top: 1rem;
+}
+
+
+/* =========================================================
+   TABELA DE LANCES
+   ========================================================= */
+
+.moves-header {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.moves-table {
+    text-align: center;
+}
+
+.moves-table th {
+    font-size: 0.85rem;
+    color: #6c757d;
+    background-color: #f8f9fa;
+}
+
+.moves-table td {
+    vertical-align: middle;
+    height: 48px;
+    font-family: monospace;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+/* Destaque para o lance ativo na tabela */
+.moves-table td.active-move {
+    background-color: #e2e3e5;
+    font-weight: bold;
+}
+
+.moves-table .move-number {
+    width: 60px;
+    color: #6c757d;
+    font-family: inherit;
+}
+
+
+/* =========================================================
+   TABULEIRO VISUAL
+   ========================================================= */
+
+#boardContainer {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.chess-board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border: 2px solid #333;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    user-select: none;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+/* Casas do tabuleiro */
+.chess-square {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+    position: relative;
+}
+
+.chess-square.light {
+    background-color: #f0d9b5;
+    color: #111;
+}
+
+.chess-square.dark {
+    background-color: #b58863;
+    color: #111;
+}
+
+/* Destacar último movimento no tabuleiro */
+.chess-square.highlight {
+background-color: rgba(255, 255, 51, 0.5) !important;
+}
+
+/* Inversão do tabuleiro (Visão das Pretas) */
+.chess-board.flipped {
+    transform: rotate(180deg);
+}
+
+.chess-board.flipped .chess-square .chess-piece {
+    transform: rotate(180deg);
+}
+
+/* Renderização e animação suave das peças */
+.chess-piece {
+    line-height: 1;
+    transition: transform 0.3s ease;
+    display: inline-block;
+}
+
+
+
+
+/* Container do tabuleiro */
+#board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 1 / 1;
+    border: 2px solid #333;
+    margin: 0 auto;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* Casas do tabuleiro */
+.chess-square {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(2rem + 1vw);
+    user-select: none;
+}
+
+/* Tema Verde do Chess.com 
+.chess-square.light {
+    background-color: #eeeed2;
+    color: #222;
+}
+
+.chess-square.dark {
+    background-color: #769656;
+    color: #222;
+}
+*/
+
+/* Destaque do último lance (Chess.com usa amarelo translúcido) 
+.chess-square.highlight {
+    background-color: #baca44 !important;
+}*/
+
+/* Estilo das Coordenadas (Letras e Números) */
+.coord {
+    position: absolute;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.light .coord {
+    color: #769656;;
+}
+
+.dark .coord {
+    color: #eeeed2;
+}
+
+.coord-rank {
+    top: 2px;
+    left: 3px;
+}
+
+.coord-file {
+    bottom: 2px;
+    right: 3px;
+}
+
+/* Inversão do tabuleiro */
+#board.flipped {
+    transform: rotate(180deg);
+}
+
+#board.flipped .chess-piece,
+#board.flipped .coord,
+#board.flipped .coverage-badge {
+    transform: rotate(180deg);
+}
+
+
+/* =========================================================
+   CONTROLES DE LANCES E IR PARA O LANCE
+   ========================================================= */
+
+.moves-controls {
+    display: flex;
+    flex-direction: column;
+}
+
+#goToMoveInput {
+    text-align: center;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE E STICKY TOP
+   ========================================================= */
+
+@media (min-width: 992px) {
+    /* Garante que o tabuleiro fique visível sem ser cortado pela barra superior ao rolar */
+    .sticky-top {
+        top: 1rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .moves-controls button {
+        min-width: auto;
+    }
+
+    .chess-square {
+        font-size: 2rem;
+    }
+
+}
+
+/* =========================================================
+   CSS para os Badges / Indicadores com a quantidade
+   ========================================================= */
+
+/* Container da casa */
+.chess-square {
+  position: relative;
+}
+
+/* Indicadores de Raio de Ação */
+.coverage-badge {
+  position: absolute;
+  top: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: bold;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+  /*box-shadow: 0 1px 3px rgba(0,0,0,0.4);*/
+}
+
+/* Brancas (Verde no Canto Superior Esquerdo) */
+.coverage-badge.coverage-white {
+  left: 4px;
+  background-color: #2ecc71; /*#2ecc71*/
+}
+
+/* Pretas (Vermelho no Canto Superior Direito) */
+.coverage-badge.coverage-black {
+  right: 4px;
+  background-color: #e74c3c; /*#e74c3c*/
+}
