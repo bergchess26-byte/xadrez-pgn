@@ -983,11 +983,11 @@ function updateCoverageButtonUI() {
     if (showCoverage) {
         toggleCoverageButton.classList.remove('btn-outline-secondary');
         toggleCoverageButton.classList.add('btn-success');
-        toggleCoverageButton.innerHTML = '🎯 Raio de Ação: <strong>ON</strong>';
+        toggleCoverageButton.innerHTML = '🎯 Raio'; //  de Ação: <strong>ON</strong>
     } else {
         toggleCoverageButton.classList.remove('btn-success');
         toggleCoverageButton.classList.add('btn-outline-secondary');
-        toggleCoverageButton.innerHTML = '🎯 Raio de Ação: <strong>OFF</strong>';
+        toggleCoverageButton.innerHTML = '🎯 Raio'; // de Ação: <strong>OFF</strong>
     }
 }
 
