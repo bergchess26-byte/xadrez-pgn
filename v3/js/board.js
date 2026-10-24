@@ -1,9 +1,9 @@
 'use strict';
 
 /*
- * =========================================================
- * MOTOR INTERNO DO TABULEIRO
- * =========================================================
+- =========================================================
+- MOTOR INTERNO DO TABULEIRO
+- =========================================================
  */
 
 const FILES = [
@@ -420,21 +420,7 @@ function canPawnMove(
 
 /* =========================================================
    ENCONTRAR CANDIDATOS
-   =========================================================
- *
- * Esta função é a base da desambiguação.
- *
- * Ela retorna TODAS as peças do mesmo tipo que conseguem
- * efetivamente fazer o lance para o mesmo destino.
- *
- * Portanto:
- *
- * candidates.length === 1
- *     -> não existe ambiguidade
- *
- * candidates.length > 1
- *     -> existe ambiguidade
- */
+   ========================================================= */
 
 function findCandidatePieces(
     board,
@@ -499,14 +485,6 @@ function findCandidatePieces(
             0,
             movement.length - 2
         );
-
-    /*
-     * Desambiguação do SAN original.
-     *
-     * Se o PGN já trouxe Nbd2, R1e1 etc.,
-     * respeitamos essa informação para encontrar
-     * a origem correta.
-     */
 
     const disambiguation =
         movement;
@@ -625,10 +603,7 @@ function findCandidatePieces(
 
 /* =========================================================
    NOME DA ORIGEM
-   =========================================================
- *
- * Usado somente quando realmente existe ambiguidade.
- */
+   ========================================================= */
 
 function getDescriptiveOriginName(
     board,
@@ -646,13 +621,6 @@ function getDescriptiveOriginName(
     const rank =
         Number(square[1]);
 
-    /*
-     * Cavalo:
-     *
-     * b1/b8 = Cavalo da Dama
-     * g1/g8 = Cavalo do Rei
-     */
-
     if (pieceType === 'N') {
 
         if (file === 'b') {
@@ -663,13 +631,6 @@ function getDescriptiveOriginName(
             return 'CR';
         }
 
-        /*
-         * Cavalo que já saiu da posição original.
-         *
-         * Usa a coluna de origem como identificador.
-         * A notation.js acrescentará o tipo C.
-         */
-
         return (
             'C' +
             file.toUpperCase() +
@@ -677,10 +638,6 @@ function getDescriptiveOriginName(
         );
 
     }
-
-    /*
-     * Torres.
-     */
 
     if (pieceType === 'R') {
 
@@ -699,10 +656,6 @@ function getDescriptiveOriginName(
         );
 
     }
-
-    /*
-     * Bispos.
-     */
 
     if (pieceType === 'B') {
 
@@ -745,10 +698,6 @@ function applyMove(
             /[+#]+$/,
             ''
         );
-
-    /*
-     * ROQUE PEQUENO
-     */
 
     if (cleanSAN === 'O-O') {
 
@@ -804,11 +753,6 @@ function applyMove(
 
     }
 
-
-    /*
-     * ROQUE GRANDE
-     */
-
     if (cleanSAN === 'O-O-O') {
 
         if (color === 'white') {
@@ -862,11 +806,6 @@ function applyMove(
         };
 
     }
-
-
-    /*
-     * CANDIDATOS
-     */
 
     const candidates =
         findCandidatePieces(
@@ -942,18 +881,7 @@ function applyMove(
         captured,
         promotion,
         castle: null,
-
-        /*
-         * IMPORTANTE:
-         *
-         * Guardamos os candidatos antes de aplicar
-         * o movimento.
-         *
-         * Para a notação, o array permite saber se
-         * realmente existia ambiguidade.
-         */
         candidates,
-
         previousBoard
     };
 
@@ -1039,12 +967,6 @@ function buildMoveHistory(
             castle:
                 state.castle,
 
-            /*
-             * NOVO:
-             *
-             * Lista das peças que poderiam fazer
-             * o movimento.
-             */
             candidates:
                 state.candidates,
 
@@ -1064,7 +986,7 @@ function buildMoveHistory(
 
 
 /* =========================================================
-   NOVO: RENDERIZAÇÃO E ROTAÇÃO DO TABULEIRO VISUAL
+   NOVO: RENDERIZAÇÃO E ROTAÇÃO DO TABULEIRO VISUAL (COM SVG)
    ========================================================= */
 
 const UNICODE_PIECES = {
@@ -1072,14 +994,14 @@ const UNICODE_PIECES = {
     'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
 };
 
+/* Mapeamento dos arquivos SVG localizados na pasta 'svg' */
+const SVG_PIECES = {
+    'K': 'svg/wK.svg', 'Q': 'svg/wQ.svg', 'R': 'svg/wR.svg', 'B': 'svg/wB.svg', 'N': 'svg/wN.svg', 'P': 'svg/wP.svg',
+    'k': 'svg/bK.svg', 'q': 'svg/bQ.svg', 'r': 'svg/bR.svg', 'b': 'svg/bB.svg', 'n': 'svg/bN.svg', 'p': 'svg/bP.svg'
+};
+
 /**
  * Renderiza o estado atual do tabuleiro no elemento DOM especificado.
- * 
- * @param {Object} boardState - Objeto contendo o mapa de casas -> peças
- * @param {string} containerId - ID do container no HTML
- * @param {boolean} isFlipped - Se true, renderiza do ponto de vista das Pretas
- * @param {Object} highlightMove - Objeto com {from, to} para destacar o último lance
- * @param {boolean} showCoverage - Ativa/desativa os indicativos de raio de ação
  */
 function renderBoard(boardState, containerId = 'board', isFlipped = false, highlightMove = null, showCoverage = false) {
     const boardElement = document.getElementById(containerId);
@@ -1096,7 +1018,6 @@ function renderBoard(boardState, containerId = 'board', isFlipped = false, highl
     const ranks = [...RANKS].reverse(); // '8' até '1'
     const files = [...FILES];           // 'a' até 'h'
 
-    // Se a funcionalidade estiver ativada, calcula a cobertura de todas as casas
     const coverageMap = showCoverage ? calculateCoverage(boardState) : null;
 
     for (let r = 0; r < 8; r++) {
@@ -1108,20 +1029,16 @@ function renderBoard(boardState, containerId = 'board', isFlipped = false, highl
             const squareElement = document.createElement('div');
             squareElement.classList.add('chess-square');
             
-            // Alternância de cores das casas
             const isLight = (r + f) % 2 === 0;
             squareElement.classList.add(isLight ? 'light' : 'dark');
 
-            // Destaque para as casas do último lance
             if (highlightMove && (square === highlightMove.from || square === highlightMove.to)) {
                 squareElement.classList.add('highlight');
             }
 
-            // Indicadores de Raio de Ação (Ataque / Defesa)
             if (showCoverage && coverageMap && coverageMap[square]) {
                 const { white, black } = coverageMap[square];
 
-                // Indicador das Brancas (Verde)
                 if (white > 0) {
                     const whiteBadge = document.createElement('span');
                     whiteBadge.className = 'coverage-badge coverage-white';
@@ -1129,7 +1046,6 @@ function renderBoard(boardState, containerId = 'board', isFlipped = false, highl
                     squareElement.appendChild(whiteBadge);
                 }
 
-                // Indicador das Pretas (Vermelho)
                 if (black > 0) {
                     const blackBadge = document.createElement('span');
                     blackBadge.className = 'coverage-badge coverage-black';
@@ -1138,16 +1054,16 @@ function renderBoard(boardState, containerId = 'board', isFlipped = false, highl
                 }
             }
 
-            // Adiciona a peça se existir na casa
+            // Adiciona a peça usando SVG se existir na casa
             const piece = boardState[square];
-            if (piece && UNICODE_PIECES[piece]) {
-                const pieceElement = document.createElement('span');
+            if (piece && SVG_PIECES[piece]) {
+                const pieceElement = document.createElement('img');
                 pieceElement.classList.add('chess-piece');
-                pieceElement.textContent = UNICODE_PIECES[piece];
+                pieceElement.src = SVG_PIECES[piece];
+                pieceElement.alt = piece;
                 squareElement.appendChild(pieceElement);
             }
 
-            // Adiciona o Número da Fileira (na primeira coluna - coluna A)
             if (f === 0) {
                 const rankSpan = document.createElement('span');
                 rankSpan.className = 'coord coord-rank';
@@ -1155,7 +1071,6 @@ function renderBoard(boardState, containerId = 'board', isFlipped = false, highl
                 squareElement.appendChild(rankSpan);
             }
 
-            // Adiciona a Letra da Coluna (na última fileira - fileira 1)
             if (r === 7) {
                 const fileSpan = document.createElement('span');
                 fileSpan.className = 'coord coord-file';
@@ -1176,27 +1091,19 @@ function flipBoardOrientation(currentOrientation) {
 }
 
 
-
 /* =========================================================
    CÁLCULO DE COBERTURA / RAIO DE AÇÃO MULTI-PEÇA
    ========================================================= */
 
-/**
- * Calcula a contagem de peças brancas e pretas que atacam/defendem cada casa.
- * @param {Object} board - Estado atual do tabuleiro (ex: { e4: 'P', e1: 'K' })
- * @returns {Object} Mapa no formato { 'e4': { white: 2, black: 1 }, ... }
- */
 function calculateCoverage(board) {
     const coverage = {};
 
-    // Inicializa todas as 64 casas com contadores zerados
     for (const f of FILES) {
         for (const r of RANKS) {
             coverage[`${f}${r}`] = { white: 0, black: 0 };
         }
     }
 
-    // Percorre todas as peças presentes no tabuleiro
     for (const square in board) {
         const piece = board[square];
         if (!piece) continue;
@@ -1208,7 +1115,6 @@ function calculateCoverage(board) {
 
         const attackedSquares = getAttackedSquaresByPiece(board, coords, type, color);
 
-        // Incrementar contador para cada casa alcançada por esta peça
         attackedSquares.forEach(targetSquare => {
             if (coverage[targetSquare]) {
                 coverage[targetSquare][color]++;
@@ -1219,13 +1125,9 @@ function calculateCoverage(board) {
     return coverage;
 }
 
-/**
- * Retorna lista de casas que uma determinada peça ataca/guarda.
- */
 function getAttackedSquaresByPiece(board, coords, type, color) {
     const targets = [];
 
-    // Direções de movimento
     const straightDirs = [[0, 1], [0, -1], [1, 0], [-1, 0]];
     const diagonalDirs = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
     const knightOffsets = [
@@ -1281,9 +1183,6 @@ function getAttackedSquaresByPiece(board, coords, type, color) {
     return targets;
 }
 
-/**
- * Auxiliar para peças deslizantes (Bispo, Torre, Rainha)
- */
 function addRayAttacks(board, startCoords, directions, targets) {
     directions.forEach(([df, dr]) => {
         let f = startCoords.file + df;
@@ -1293,7 +1192,6 @@ function addRayAttacks(board, startCoords, directions, targets) {
             const sq = coordinatesToSquare(f, r);
             if (sq) {
                 targets.push(sq);
-                // Se encontrar qualquer peça na casa, ataca/protege ela, mas a linha para ali
                 if (board[sq]) {
                     break;
                 }
